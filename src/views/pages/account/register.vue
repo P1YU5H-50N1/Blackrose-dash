@@ -12,6 +12,7 @@
           >Email</label
         >
         <input
+          required
           type="email"
           id="email"
           class="w-full px-3 py-2 placeholder-gray-400 text-gray-200 border rounded-lg focus:outline-none focus:shadow-outline"
@@ -26,6 +27,7 @@
         <input
           type="password"
           id="password"
+          required
           class="w-full px-3 py-2 placeholder-gray-400 text-gray-200 border rounded-lg focus:outline-none focus:shadow-outline"
           placeholder="Password"
           v-model="register_form.password"
@@ -46,6 +48,7 @@
         <div class="flex items-center">
           <span class="text-gray-600 mr-2">or</span>
           <button
+            @click="loginWithGoogle()"
             class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             Sign in with Google
@@ -57,15 +60,46 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useStore } from 'vuex';
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
 export default {
   name: "Register",
+  methods: {
+    loginWithGoogle() {
+      const provider = new GoogleAuthProvider()
+      const auth = getAuth();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // This gives you a Google Access Token. You can use it to access the Google API.
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          // The signed-in user info.
+          const user = result.user
+          console.log(user,token,"OAUTH GOOGLE")
+          // IdP data available using getAdditionalUserInfo(result)
+          // ...
+        })
+        .catch((error) => {
+          // Handle Errors here.
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // The email of the user's account used.
+          const email = error.customData.email;
+          // The AuthCredential type that was used.
+          const credential = GoogleAuthProvider.credentialFromError(error);
+          console.log(error)
+          // ...
+        });
+    },
+  },
   setup() {
     const register_form = ref({});
     const store = useStore();
 
     const register = () => {
+      console.log(register_form.value);
       store.dispatch("register", register_form.value);
     };
 

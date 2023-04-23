@@ -54,10 +54,12 @@ export const actions = {
 
     // register the user
     register({ commit, dispatch, getters }, { email, password } = {}) {
+        console.log(getters.loggedIn,"register action")
         if (getters.loggedIn) return dispatch('validate')
-
+        console.log("registering")
         return getFirebaseBackend().registerUser(email, password).then((response) => {
             const user = response
+            console.log(user)
             commit('SET_CURRENT_USER', user)
             return user
         });
@@ -65,14 +67,14 @@ export const actions = {
 
     // register the user
     // eslint-disable-next-line no-unused-vars
-    resetPassword({ commit, dispatch, getters }, { email } = {}) {
-        if (getters.loggedIn) return dispatch('validate')
+    // resetPassword({ commit, dispatch, getters }, { email } = {}) {
+    //     if (getters.loggedIn) return dispatch('validate')
 
-        return getFirebaseBackend().forgetPassword(email).then((response) => {
-            const message = response.data
-            return message
-        });
-    },
+    //     return getFirebaseBackend().forgetPassword(email).then((response) => {
+    //         const message = response.data
+    //         return message
+    //     });
+    // },
 
     // Validates the current user's token and refreshes it
     // with new data from the API.
@@ -80,6 +82,7 @@ export const actions = {
     validate({ commit, state }) {
         if (!state.currentUser) return Promise.resolve(null)
         const user = getFirebaseBackend().getAuthenticatedUser();
+        console.log(user,"VALIDATE")
         commit('SET_CURRENT_USER', user)
         return user;
     },

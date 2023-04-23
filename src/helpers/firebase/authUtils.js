@@ -6,6 +6,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
+    sendEmailVerification,
     signOut
 } from 'firebase/auth'
 
@@ -18,6 +19,7 @@ class FirebaseAuthBackend {
             this.firebase = initializeApp(firebaseConfig);
             this.auth = getAuth(this.firebase)
             this.auth.onAuthStateChanged((user) => {
+                console.log("on state change ")
                 if (user) {
                     sessionStorage.setItem("authUser", JSON.stringify(user));
                 } else {
@@ -32,8 +34,10 @@ class FirebaseAuthBackend {
      */
     registerUser = (email, password) => {
         return new Promise((resolve, reject) => {
-            createUserWithEmailAndPassword(this.auth,email, password).then((user) => {
+            createUserWithEmailAndPassword(this.auth, email, password).then((user) => {
                 // eslint-disable-next-line no-redeclare
+                sendEmailVerification(this.auth.currentUser)
+                console.log(user)
                 var user = this.auth.currentUser;
                 resolve(user);
             }, (error) => {
@@ -47,7 +51,7 @@ class FirebaseAuthBackend {
      */
     loginUser = (email, password) => {
         return new Promise((resolve, reject) => {
-            
+
             signInWithEmailAndPassword(this.auth, email, password).then((user) => {
                 // eslint-disable-next-line no-redeclare
                 var user = this.auth.currentUser;
@@ -64,7 +68,7 @@ class FirebaseAuthBackend {
      */
     forgetPassword = (email) => {
         return new Promise((resolve, reject) => {
-            sendPasswordResetEmail(this.auth,email, { url: window.location.protocol + "//" + window.location.host + "/login" }).then(() => {
+            sendPasswordResetEmail(this.auth, email, { url: window.location.protocol + "//" + window.location.host + "/login" }).then(() => {
                 resolve(true);
             }).catch((error) => {
                 reject(this._handleError(error));
