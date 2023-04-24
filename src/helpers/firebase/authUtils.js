@@ -1,5 +1,6 @@
 import "firebase/auth";
 // import "firebase/firestore";
+import store from "../../state/store";
 import { initializeApp } from "firebase/app";
 import {
     getAuth,
@@ -7,19 +8,23 @@ import {
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
     sendEmailVerification,
-    signOut
+    GoogleAuthProvider,
+    signOut,
+    signInWithPopup
 } from 'firebase/auth'
 
 class FirebaseAuthBackend {
     constructor(firebaseConfig) {
         this.firebase = null
         this.auth = null
+        this.googleProvider = null
         if (firebaseConfig) {
             // Initialize Firebase
             this.firebase = initializeApp(firebaseConfig);
             this.auth = getAuth(this.firebase)
+            this.googleProvider = new GoogleAuthProvider()
+
             this.auth.onAuthStateChanged((user) => {
-                console.log("on state change ")
                 if (user) {
                     sessionStorage.setItem("authUser", JSON.stringify(user));
                 } else {
@@ -37,7 +42,6 @@ class FirebaseAuthBackend {
             createUserWithEmailAndPassword(this.auth, email, password).then((user) => {
                 // eslint-disable-next-line no-redeclare
                 sendEmailVerification(this.auth.currentUser)
-                console.log(user)
                 var user = this.auth.currentUser;
                 resolve(user);
             }, (error) => {
@@ -55,12 +59,24 @@ class FirebaseAuthBackend {
             signInWithEmailAndPassword(this.auth, email, password).then((user) => {
                 // eslint-disable-next-line no-redeclare
                 var user = this.auth.currentUser;
-                console.log(user)
                 resolve(user);
             }, (error) => {
                 reject(this._handleError(error));
             });
         });
+    }
+    loginWithGoogle = () => {
+        return new Promise((resolve, reject) => {
+            signInWithPopup(this.auth, this.googleProvider).then((result) => {
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user
+                user['credentialAccessToken'] = token
+                resolve(user)
+                console.log(user, token, "OAUTH GOOGLE")
+            }, err => reject(this._handleError(err)))
+        })
     }
 
     /**
@@ -99,7 +115,8 @@ class FirebaseAuthBackend {
     getAuthenticatedUser = () => {
         if (!sessionStorage.getItem('authUser'))
             return null;
-        return JSON.parse(sessionStorage.getItem('authUser'));
+        const user_data = JSON.parse(sessionStorage.getItem('authUser'));
+        return user_data;
     }
 
     /**
