@@ -3,6 +3,7 @@
     <form class="p-10 bg-black rounded-lg shadow-xl" @submit.prevent="login">
       <h1 class="text-white text-3xl mb-6">Log In</h1>
       <div class="mb-4">
+        <div v-if="error">{{ error }}</div>
         <label class="block text-white text-sm font-bold mb-2" for="email">
           Email
         </label>
@@ -36,24 +37,26 @@
         >
           Log In
         </button>
-        <router-link
-          class="inline-block align-baseline font-bold text-sm text-white hover:text-green-500"
-          href="#"
-          to="/forgot-password"
-        >
-          Forgot Password?
-        </router-link>
       </div>
       <div class="mt-4">
         <p class="text-white text-center">or</p>
       </div>
       <div class="flex justify-center mt-2">
         <button
+          @click="loginWithGoogle()"
           class="bg-red-500 w-full hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-4"
           type="button"
         >
           Sign In with Google
         </button>
+        <router-link to="/register">
+          <button
+            class="bg-green-500 w-full hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-4"
+            type="button"
+          >
+            Register
+          </button>
+        </router-link>
       </div>
     </form>
   </div>
@@ -61,11 +64,17 @@
 
 <script>
 import { ref } from "vue";
-import { useStore } from "vuex";
+import { useStore, mapState } from "vuex";
 import { useRouter } from "vue-router";
 
 export default {
   name: "login",
+  computed: mapState({
+    error: (state) => state.error,
+    error(state) {
+      return state.error;
+    },
+  }),
   setup() {
     const login_form = ref({});
     const store = useStore();
@@ -73,12 +82,20 @@ export default {
 
     const login = async () => {
       await store.dispatch("logIn", login_form.value);
-      router.push('/')
+      if (await store.getters["emailVerified"]) {
+        router.push("/");
+      }
     };
-
+    const loginWithGoogle = async () => {
+      await store.dispatch("loginWithGoogle");
+      if (!store.state.error) {
+        router.push("/");
+      }
+    };
     return {
       login_form,
       login,
+      loginWithGoogle,
     };
   },
 };
@@ -92,19 +109,3 @@ button {
   cursor: pointer;
 }
 </style>
-
-<!-- <template>
-    <div>
-        login
-    </div>
-</template>
-
-<script>
-export default {
-    name:'login'
-}
-</script>
-
-<style>
-
-</style> -->
