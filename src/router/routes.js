@@ -11,11 +11,6 @@ export default [
     component: () => import('../views/pages/account/register.vue'),
   },
   {
-    path: '/forgot-password',
-    name: 'Forgot-password',
-    component: () => import('../views/pages/account/forgot-password.vue'),
-  },
-  {
     path: '/logout',
     name: 'logout',
     meta: {
