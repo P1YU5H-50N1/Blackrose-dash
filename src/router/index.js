@@ -20,34 +20,20 @@ router.beforeEach(async (to, from, next) => {
     const authRequired = to.matched.some((route) => route.meta.authRequired)
     const isLoggedIn = store.getters["loggedIn"]
 
-    if (isLoggedIn) {
-        try {
-            const validUser = await store.dispatch('validate')
-            console.log("Validated User")
-            if ((["/login", "/register", "/forgot-password"].includes(to.path)) && validUser) {
-                next('/')
-                return;
-            }
+    if (authRequired) {
 
-            if (authRequired && !validUser) {
-                next('/login')
-                return;
-            }
+        if (isLoggedIn)
             next()
+        else
+            next('/login')
 
-        } catch (err) {
-            console.log(err)
+    } else {
+        if (isLoggedIn) {
+            next('/')
+        } else {
+            next()
         }
     }
-    if (!["/login", "/register", "/forgot-password"].includes(to.path)) {
-        next({
-            name: 'login',
-            query: {
-                redirectFrom: to.fullPath
-            }
-        })
-    }
-    next()
 })
 
 
