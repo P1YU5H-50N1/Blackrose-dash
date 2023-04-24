@@ -1,14 +1,14 @@
 <template>
   <div class="flex justify-center items-center h-screen">
-    <form class="p-10 bg-black rounded-lg shadow-xl"  @submit.prevent="login">
+    <form class="p-10 bg-black rounded-lg shadow-xl" @submit.prevent="login">
       <h1 class="text-white text-3xl mb-6">Log In</h1>
       <div class="mb-4">
         <label class="block text-white text-sm font-bold mb-2" for="email">
           Email
         </label>
         <input
-        v-model="login_form.email"
-        required
+          v-model="login_form.email"
+          required
           class="appearance-none border rounded w-full py-2 px-3 text-white bg-black leading-tight focus:outline-none focus:shadow-outline"
           id="email"
           type="email"
@@ -60,24 +60,27 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useStore } from 'vuex'
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 export default {
   name: "login",
-  setup () {
-		const login_form = ref({});
-		const store = useStore();
+  setup() {
+    const login_form = ref({});
+    const store = useStore();
+    const router = useRouter();
 
-		const login = () => {
-			store.dispatch('logIn', login_form.value);
-		}
+    const login = async () => {
+      await store.dispatch("logIn", login_form.value);
+      router.push('/')
+    };
 
-		return {
-			login_form,
-			login,
-		}
-	}
+    return {
+      login_form,
+      login,
+    };
+  },
 };
 </script>
 

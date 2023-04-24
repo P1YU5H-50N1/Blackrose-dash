@@ -28,7 +28,6 @@ export const actions = {
 
     // Logs in the current user.
     logIn({ commit, dispatch, getters }, { email, password } = {}) {
-        console.log('login action')
         if (getters.loggedIn) return dispatch('validate')
 
         return getFirebaseBackend().loginUser(email, password).then((response) => {

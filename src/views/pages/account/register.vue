@@ -63,44 +63,45 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-
+import { useRouter } from "vue-router";
 export default {
   name: "Register",
   methods: {
     loginWithGoogle() {
-      const provider = new GoogleAuthProvider()
-      const auth = getAuth();
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          // This gives you a Google Access Token. You can use it to access the Google API.
-          const credential = GoogleAuthProvider.credentialFromResult(result);
-          const token = credential.accessToken;
-          // The signed-in user info.
-          const user = result.user
-          console.log(user,token,"OAUTH GOOGLE")
-          // IdP data available using getAdditionalUserInfo(result)
-          // ...
-        })
-        .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // The email of the user's account used.
-          const email = error.customData.email;
-          // The AuthCredential type that was used.
-          const credential = GoogleAuthProvider.credentialFromError(error);
-          console.log(error)
-          // ...
-        });
+      // const provider = new GoogleAuthProvider()
+      // const auth = getAuth();
+      // signInWithPopup(auth, provider)
+      //   .then((result) => {
+      //     // This gives you a Google Access Token. You can use it to access the Google API.
+      //     const credential = GoogleAuthProvider.credentialFromResult(result);
+      //     const token = credential.accessToken;
+      //     // The signed-in user info.
+      //     const user = result.user
+      //     console.log(user,token,"OAUTH GOOGLE")
+      //     // IdP data available using getAdditionalUserInfo(result)
+      //     // ...
+      //   })
+      //   .catch((error) => {
+      //   // Handle Errors here.
+      //   const errorCode = error.code;
+      //   const errorMessage = error.message;
+      //   // The email of the user's account used.
+      //   const email = error.customData.email;
+      //   // The AuthCredential type that was used.
+      //   const credential = GoogleAuthProvider.credentialFromError(error);
+      //   console.log(error)
+      //   // ...
+      // });
     },
   },
   setup() {
     const register_form = ref({});
     const store = useStore();
+    const router = useRouter();
 
-    const register = () => {
-      console.log(register_form.value);
-      store.dispatch("register", register_form.value);
+    const register = async () => {
+      await store.dispatch("register", register_form.value);
+      router.push("/");
     };
 
     return {
