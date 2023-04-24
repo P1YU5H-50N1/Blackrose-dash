@@ -2,13 +2,16 @@ import { getFirebaseBackend } from '../../helpers/firebase/authUtils'
 
 export const state = {
     currentUser: sessionStorage.getItem('authUser'),
+    error: null
 }
 
 export const mutations = {
     SET_CURRENT_USER(state, newValue) {
         state.currentUser = newValue
-        saveState('auth.currentUser', newValue)
     },
+    SET_ERROR(state, newValue) {
+        state.error = newValue
+    }
 }
 
 export const getters = {
@@ -16,6 +19,12 @@ export const getters = {
     loggedIn(state) {
         return !!state.currentUser
     },
+    emailVerified(state) {
+        return !!state.currentUser && state.currentUser.emailVerified
+    },
+    error(state) {
+        return state.error
+    }
 }
 
 export const actions = {
@@ -32,9 +41,13 @@ export const actions = {
 
         return getFirebaseBackend().loginUser(email, password).then((response) => {
             const user = response
-            commit('SET_CURRENT_USER', user)
+            if (user.emailVerified) {
+                commit('SET_CURRENT_USER', user)
+            } else {
+                commit('SET_ERROR', "Email Not Verified")
+            }
             return user
-        }).catch(err=>console.log(err));
+        }).catch(err => console.log(err));
     },
 
     // Logs out the current user.
@@ -51,38 +64,43 @@ export const actions = {
         });
     },
 
-    // register the user
-    register({ commit, dispatch, getters }, { email, password } = {}) {
-        console.log(getters.loggedIn,"register action")
+    loginWithGoogle({ commit, dispatch, getters }) {
+
         if (getters.loggedIn) return dispatch('validate')
-        console.log("registering")
-        return getFirebaseBackend().registerUser(email, password).then((response) => {
-            const user = response
-            console.log(user)
+        return getFirebaseBackend().loginWithGoogle().then(user => {
             commit('SET_CURRENT_USER', user)
-            return user
-        });
+        }).catch(err => console.log(err))
     },
 
     // register the user
-    // eslint-disable-next-line no-unused-vars
-    // resetPassword({ commit, dispatch, getters }, { email } = {}) {
-    //     if (getters.loggedIn) return dispatch('validate')
+    register({ commit, dispatch, getters }, { email, password } = {}) {
+        if (getters.loggedIn) return dispatch('validate')
 
-    //     return getFirebaseBackend().forgetPassword(email).then((response) => {
-    //         const message = response.data
-    //         return message
-    //     });
-    // },
+        return getFirebaseBackend().registerUser(email, password).then(async (response) => {
+            const user = response
+            try {
+                await getFirebaseBackend().logout()
+            } catch (err) {
+                console.log(err)
+            }
+            if (!user.emailVerified)
+                commit('SET_ERROR', "Email Not Verified")
+            // commit('SET_CURRENT_USER', user)
+            return user
+        }).catch(err => commit("SET_ERROR", err));
+    },
+
 
     // Validates the current user's token and refreshes it
     // with new data from the API.
     // eslint-disable-next-line no-unused-vars
     validate({ commit, state }) {
         if (!state.currentUser) return Promise.resolve(null)
+
         const user = getFirebaseBackend().getAuthenticatedUser();
-        console.log(user,"VALIDATE")
-        commit('SET_CURRENT_USER', user)
+        if (user.emailVerified) {
+            commit('SET_CURRENT_USER', user)
+        }
         return user;
     },
 }
