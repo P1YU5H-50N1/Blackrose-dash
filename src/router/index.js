@@ -3,7 +3,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 // import VueMeta from 'vue-meta'
-// import store from '@/state/store'
+import store from "../state/store"
 
 import routes from './routes'
 
@@ -12,8 +12,46 @@ import routes from './routes'
 
 const router = createRouter({
     routes,
-    history:createWebHistory(import.meta.env.BASE_URL)
+    history: createWebHistory(import.meta.env.BASE_URL)
 })
+
+router.beforeEach(async (to, from, next) => {
+
+    const authRequired = to.matched.some((route) => route.meta.authRequired)
+    const isLoggedIn = store.getters["loggedIn"]
+
+    if (isLoggedIn) {
+        try {
+            const validUser = await store.dispatch('validate')
+            console.log("Validated User")
+            if ((["/login", "/register", "/forgot-password"].includes(to.path)) && validUser) {
+                next('/')
+                return;
+            }
+
+            if (authRequired && !validUser) {
+                next('/login')
+                return;
+            }
+            next()
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    if(!["/login", "/register", "/forgot-password"].includes(to.path)){
+        next({
+            name: 'login',
+            query: {
+                redirectFrom: to.fullPath
+            }
+        })
+    }
+    next()
+})
+
+
+
 // const router = new VueRouter({
 //     routes,
 //     // Use the HTML5 history API (i.e. normal-looking routes)
@@ -35,7 +73,7 @@ const router = createRouter({
 
 // // Before each route evaluates...
 // router.beforeEach((routeTo, routeFrom, next) => {
-//     if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
+//     
 //         // Check if auth is required on this route
 //         // (including nested routes).
 //         const authRequired = routeTo.matched.some((route) => route.meta.authRequired)
@@ -68,17 +106,7 @@ const router = createRouter({
 //                 }
 //             })
 //         }
-//     } else if (process.env.VUE_APP_DEFAULT_AUTH === "fakebackend") {
-//         const publicPages = ['/login', '/register', '/forgot-password'];
-//         const authpage = !publicPages.includes(routeTo.path);
-//         const loggeduser = localStorage.getItem('user');
-
-//         if (authpage && !loggeduser) {
-//             return next('/login');
-//         }
-
-//         next();
-//     }
+//     
 // })
 
 // router.beforeResolve(async (routeTo, routeFrom, next) => {
