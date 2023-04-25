@@ -38,16 +38,21 @@ export const actions = {
     // Logs in the current user.
     logIn({ commit, dispatch, getters }, { email, password } = {}) {
         if (getters.loggedIn) return dispatch('validate')
-
+        commit('SET_ERROR', "Loading")
         return getFirebaseBackend().loginUser(email, password).then((response) => {
             const user = response
             if (user.emailVerified) {
                 commit('SET_CURRENT_USER', user)
+                commit('SET_ERROR', null)
             } else {
-                commit('SET_ERROR', "Email Not Verified")
+                throw Error("Email Not Verified")
             }
             return user
-        }).catch(err => console.log(err));
+        }).catch(async (err) => {
+            console.log(err);
+            await getFirebaseBackend().logout()
+            commit('SET_ERROR', "Email Not Verified")
+        });
     },
 
     // Logs out the current user.
@@ -67,14 +72,19 @@ export const actions = {
     loginWithGoogle({ commit, dispatch, getters }) {
 
         if (getters.loggedIn) return dispatch('validate')
+        commit('SET_ERROR', "Loading")
+
         return getFirebaseBackend().loginWithGoogle().then(user => {
             commit('SET_CURRENT_USER', user)
+            commit('SET_ERROR', null)
+
         }).catch(err => console.log(err))
     },
 
     // register the user
     register({ commit, dispatch, getters }, { email, password } = {}) {
         if (getters.loggedIn) return dispatch('validate')
+        commit('SET_ERROR', "Loading")
 
         return getFirebaseBackend().registerUser(email, password).then(async (response) => {
             const user = response

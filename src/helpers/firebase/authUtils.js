@@ -26,7 +26,12 @@ class FirebaseAuthBackend {
 
             this.auth.onAuthStateChanged((user) => {
                 if (user) {
-                    sessionStorage.setItem("authUser", JSON.stringify(user));
+                    if (user.emailVerified) {
+                        sessionStorage.setItem("authUser", JSON.stringify(user));
+                    } else {
+                        signOut(this.auth)
+                            .then().catch(err => console.log(err))
+                    }
                 } else {
                     sessionStorage.removeItem('authUser');
                 }
@@ -105,9 +110,9 @@ class FirebaseAuthBackend {
         });
     }
 
-    setLoggeedInUser = (user) => {
-        sessionStorage.setItem("authUser", JSON.stringify(user));
-    }
+    // setLoggeedInUser = (user) => {
+    //     sessionStorage.setItem("authUser", JSON.stringify(user));
+    // }
 
     /**
      * Returns the authenticated user
@@ -115,7 +120,7 @@ class FirebaseAuthBackend {
     getAuthenticatedUser = () => {
         if (!sessionStorage.getItem('authUser'))
             return null;
-        const user_data = JSON.parse(sessionStorage.getItem('authUser'));
+        const user_data = sessionStorage.getItem('authUser');
         return user_data;
     }
 
