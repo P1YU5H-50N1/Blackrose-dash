@@ -1,5 +1,15 @@
 <template>
-  <div class="flex justify-center items-center h-screen">
+  <div class="h-full w-full bg-public-bg bg-no-repeat bg-center blur-2xl bg-black text-white "
+    :style="{ backgroundSize: 'cover' }">
+    <div class="h-full w-full " :style="{
+      background: 'linear-gradient(303.08deg, #2DFF8E -198.89%, #F5F5F5 48.6%)',
+      mixBlendMode: 'color'
+    }">
+
+
+    </div>
+  </div>
+  <!-- <div class="flex justify-center items-center h-screen">
     <form class="p-10 bg-black rounded-lg shadow-xl" @submit.prevent="login">
       <h1 class="text-white text-3xl mb-6">Log In</h1>
       <div class="mb-4">
@@ -59,7 +69,7 @@
         </router-link>
       </div>
     </form>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -102,10 +112,10 @@ export default {
 </script>
 
 <style scoped>
-body {
+/* body {
   background-color: black;
 }
 button {
   cursor: pointer;
-}
+} */
 </style>
