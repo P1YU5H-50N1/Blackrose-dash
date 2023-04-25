@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.0.17",
     "apexcharts": "^3.39.0",
     "firebase": "^9.20.0",
     "vue": "^3.2.47",
