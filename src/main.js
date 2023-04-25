@@ -3,6 +3,9 @@ import './style.css'
 import App from './App.vue'
 import store from './state/store'
 import router from './router'
+import ApexCharts from 'apexcharts';
+
+
 
 
 import { initFirebaseBackend } from './helpers/firebase/authUtils';
@@ -22,6 +25,7 @@ initFirebaseBackend(firebaseConfig);
 
 
 const app = createApp(App)
+app.config.globalProperties.$apexcharts = ApexCharts;
 app.use(store)
 app.use(router)
 app.mount('#app')
