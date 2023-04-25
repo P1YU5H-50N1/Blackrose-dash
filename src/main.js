@@ -5,9 +5,6 @@ import store from './state/store'
 import router from './router'
 import ApexCharts from 'apexcharts';
 
-
-
-
 import { initFirebaseBackend } from './helpers/firebase/authUtils';
 
 const firebaseConfig = {
