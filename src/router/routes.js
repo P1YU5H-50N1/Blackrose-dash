@@ -13,6 +13,11 @@ export default [
   {
     path: '/logout',
     name: 'logout',
+    component:{
+      mounted(){
+        this.$router.push('/login')
+      }
+    },
     meta: {
       authRequired: true,
       beforeResolve(routeTo, routeFrom, next) {
@@ -36,6 +41,10 @@ export default [
       authRequired: true,
     },
     component: () => import('../views/pages/dashboard/index.vue')
+  },
+  {
+    path: '/:catchAll(.*)',
+    redirect: { name: 'login' }
   }
 
 ]
