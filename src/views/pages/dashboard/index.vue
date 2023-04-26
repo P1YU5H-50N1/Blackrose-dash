@@ -1,75 +1,39 @@
 
 
 <template>
-  Dashboard
-  <div>
-    <div class="col-xl-8">
-      <div class="card">
-        <div class="card-body">
-          <div class="float-end">
-            <div class="dropdown" variant="white" toggle-class="text-reset p-0" menu-class="dropdown-menu-end">
-              <!-- <template v-slot:button-content> -->
-              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="fw-semibold">Sort By:</span>
-                <span class="text-muted">
-                  Yearly
-                  <i class="mdi mdi-chevron-down ms-1"></i>
-                </span>
-              </button>
-              <!-- </template> -->
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+  <div class="h-full w-full flex flex-col-reverse md:flex-row">
+    <div
+      class="bg-menu border-r flex md:flex-col border-r-menu-stroke w-full h-12 md:w-12 md:h-full justify-center items-center">
 
-                <a class="dropdown-item" href="#">Monthly</a>
-                <a class="dropdown-item" href="#">Yearly</a>
-                <a class="dropdown-item" href="#">Weekly</a>
-              </div>
-            </div>
-          </div>
-          <h4 class="card-title mb-4">Sales Analytics</h4>
+      <div class="hidden bg-logo md:block md:w-[20px] md:h-[20px] md:bg-cover self-center">
+      </div>
+      <div class="flex md:h-4/5 justify-center w-full md:flex-col items-center  gap-10">
+        <div class=" h-full md:w-full md:h-min md:border-t-0 flex justify-center border-t-2 md:border-r-2 border-neon">
 
-          <div class="mt-1">
-            <ul class="list-inline main-chart mb-0">
-              <li class="list-inline-item chart-border-left me-0 border-0">
-                <h3 class="text-primary">
-                  $
-                  <span data-plugin="counterup">
-                    <CountTo :startVal="1" :endVal="2371" :duration="2000"></CountTo>
-                  </span>
-                  <span class="text-muted d-inline-block font-size-15 ms-3">Income</span>
-                </h3>
-              </li>
-              <li class="list-inline-item chart-border-left me-0">
-                <h3>
-                  <span data-plugin="counterup">
-                    <CountTo :startVal="1" :endVal="258" :duration="2000"></CountTo>
-                  </span>
-                  <span class="text-muted d-inline-block font-size-15 ms-3">Sales</span>
-                </h3>
-              </li>
-              <li class="list-inline-item chart-border-left me-0">
-                <h3>
-                  <span data-plugin="counterup">3.6</span>%
-                  <span class="text-muted d-inline-block font-size-15 ms-3">Conversation Ratio</span>
-                </h3>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <apexchart type="line" class="apex-charts" dir="ltr" height="339" :options="chartOptions" :series="series">
-            </apexchart>
+          <div class=" cursor-pointer my-2 bg-cover w-[20px] h-[20px] bg-neon-home">
           </div>
         </div>
-        <!-- end card-body-->
+        <a href="/logout" class="bg-logout cursor-pointer bg-cover w-[20px] h-[20px] hover:bg-neon-logout">
+        </a>
       </div>
-      <!-- end card-->
-    </div>
-  </div>
 
-  <a href="/logout" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-    Logout
-  </a>
+    </div>
+    <div class="bg-dashboard text-white w-full h-full">
+      <div class="w-full flex h-25 justify-center mb-6">
+        <div class="w-11/12 border-b border-b-gray-600 pb-6 pt-10 pl-4">
+          <span class="text-l font-semibold"> Hi Vihan</span><br />
+          <span class="text-xs font-medium text-zinc-500">{{ currentDate }}</span>
+        </div>
+      </div>
+      <div class="flex w-full h-full items-center flex-col">
+        <div class="pb-4 text-sm font-semibold text-gray-300">Alpha's Performance</div>
+        <div class=" bg-miniboards rounded-xl h-min px-8 py-4 w-4/5">
+          <apexchart type="line" class="apex-charts" dir="ltr" height="339" :options="chartOptions" :series="series">
+          </apexchart>
+        </div>
+      </div>
+    </div>
+</div>
 </template>
 
 <script>
@@ -83,18 +47,20 @@ export default {
     CountTo,
     apexchart: VueApexCharts,
   },
+
   data: () => {
     return {
+      // currentDate:"TOday",
       series: [{
-        name: 'Desktops',
+        name: 'Mean Reverting',
         type: 'column',
         data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
       }, {
-        name: 'Laptops',
+        name: 'Directional',
         type: 'area',
         data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43]
       }, {
-        name: 'Tablets',
+        name: 'Arbitrage',
         type: 'line',
         data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39]
       }],
@@ -114,13 +80,13 @@ export default {
             columnWidth: '30%'
           }
         },
-        colors: ['#5b73e8', '#dfe2e6', '#f1b44c'],
+        colors: ['#2DFF8E', '#ffffff', '#ffffff'],
         fill: {
           opacity: [0.85, 0.25, 1],
           gradient: {
-            inverseColors: false,
-            shade: 'light',
-            type: "vertical",
+            inverseColors: true,
+            shade: 'dark',
+            type: "horizontal",
             opacityFrom: 0.85,
             opacityTo: 0.55,
             stops: [0, 100, 100, 100]
@@ -132,15 +98,21 @@ export default {
         },
 
         xaxis: {
-          type: 'datetime'
+          type: 'datetime',
+          title: {
+            text: 'Date'
+          }
         },
         yaxis: {
           title: {
             text: 'Points',
+            color: "#ffffff"
           },
         },
+
         tooltip: {
           shared: true,
+          theme: 'dark',
           intersect: false,
           y: {
             formatter: function (y) {
@@ -153,7 +125,25 @@ export default {
           }
         },
         grid: {
-          borderColor: '#f1f1f1'
+          borderColor: '#2DFF8E',
+          strokeDashArray: 4,
+          yaxis: {
+            lines: {
+              show: true
+            }
+          },
+          xaxis: {
+            lines: {
+              show: true
+            }
+          },
+          padding: {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0
+          },
+          position: 'back',
         }
       }
     };
@@ -161,11 +151,19 @@ export default {
   setup() {
     const store = useStore();
 
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = today.toLocaleString('en-US', { month: 'long' })
+    const day = today.getDate()
+    const currentDate = `${day} ${month}, ${year}`
+
+
     const logout = () => {
       store.dispatch("logOut");
     };
     return {
       logout,
+      currentDate,
     };
   },
 };
