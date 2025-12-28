@@ -1,6 +1,7 @@
 # Blackrose Dashboard
 
 A simple responsive dashboard application built with Vue 3 and Vite developed as a technical assessment project.
+[Hosted Live](https://blackrose-dash.netlify.app/)
 
 ## Features
 
